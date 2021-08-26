@@ -6,26 +6,41 @@ import Todos from "./components/Todos";
 export const App = () => {
     const [todos, setTodos] = useState({});
 
+    async function handleComplete(id) {
+        const url = "http://localhost:5000/todos/" + id;
+        await fetch(url, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+        });
+        let toComplete = todos[id]
+        toComplete.completed = !toComplete.completed
+        console.log(toComplete);
+        // TODO
+        setTodos(...toComplete.id, toComplete)
+    }
     function saveTodo(todoText) {
         const id = Date.now();
-        const todoData = {todo: {
-            [id]: {
-                task: todoText,
-                completed: false
+        const todoData = {
+            todo: {
+                [id]: {
+                    task: todoText,
+                    completed: false,
+                },
             },
-        },}
+        };
         const requestOptions = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(
-                todoData
-            ),
+            body: JSON.stringify(todoData),
         };
         const url = "http://localhost:5000/todos";
         fetch(url, requestOptions)
             .then((response) => response.json())
-            .then((data) => {
-                setTodos({...todos, ...todoData.todo});
+            .then(() => {
+                setTodos({ ...todos, ...todoData.todo });
+            })
+            .catch((error) => {
+                console.error("Error:", error);
             });
     }
 
@@ -40,7 +55,11 @@ export const App = () => {
     }, []);
     return (
         <Container>
-            <Todos todos={todos} saveTodo={saveTodo} />
+            <Todos
+                todos={todos}
+                saveTodo={saveTodo}
+                handleComplete={handleComplete}
+            />
         </Container>
     );
 };

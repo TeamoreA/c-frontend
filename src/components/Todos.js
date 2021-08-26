@@ -9,12 +9,15 @@ import {
     Alert,
 } from "react-bootstrap";
 
-const Todos = ({ todos, saveTodo }) => {
+const Todos = ({ todos, saveTodo, handleComplete }) => {
     const [todoValue, setTodoValue] = useState("");
     function submitTodo(e) {
         e.preventDefault();
         saveTodo(todoValue);
         setTodoValue("");
+    }
+    function completeTodo(id) {
+        handleComplete(id)
     }
     const TodoList = () => {
         if (Object.keys(todos).length === 0) {
@@ -34,6 +37,8 @@ const Todos = ({ todos, saveTodo }) => {
                                     ? "line-through"
                                     : "none",
                             }}
+                            action
+                            onClick={() => completeTodo(i)}
                         >
                             {todo.task}
                         </ListGroup.Item>
