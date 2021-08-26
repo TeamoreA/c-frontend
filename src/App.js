@@ -4,29 +4,21 @@ import { Container } from "react-bootstrap";
 import Todos from "./components/Todos";
 
 export const App = () => {
-    const [todos, setTodos] = useState({});
-
-    async function handleComplete(id) {
-        const url = "http://localhost:5000/todos/" + id;
+    const [todos, setTodos] = useState([]);
+    const [loading, setLoading] = useState(false);
+    async function handleComplete(todo_id) {
+        let toComplete = todos[todo_id];
+        toComplete.completed = !toComplete.completed;
+        setTodos((prevState) => ({ ...prevState, [todo_id]: toComplete }));
+        const url = "http://localhost:5000/todos/" + todos[todo_id].id;
         await fetch(url, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
         });
-        let toComplete = todos[id]
-        toComplete.completed = !toComplete.completed
-        console.log(toComplete);
-        // TODO
-        setTodos(...toComplete.id, toComplete)
     }
     function saveTodo(todoText) {
-        const id = Date.now();
         const todoData = {
-            todo: {
-                [id]: {
-                    task: todoText,
-                    completed: false,
-                },
-            },
+            task: todoText,
         };
         const requestOptions = {
             method: "POST",
@@ -36,8 +28,8 @@ export const App = () => {
         const url = "http://localhost:5000/todos";
         fetch(url, requestOptions)
             .then((response) => response.json())
-            .then(() => {
-                setTodos({ ...todos, ...todoData.todo });
+            .then((data) => {
+                setTodos({ ...todos, data });
             })
             .catch((error) => {
                 console.error("Error:", error);
@@ -46,10 +38,12 @@ export const App = () => {
 
     useEffect(() => {
         const fetchTodos = async () => {
+            setLoading(true);
             const url = "http://localhost:5000/todos";
             const resp = await fetch(url);
             const fetchedTodos = await resp.json();
             setTodos(fetchedTodos);
+            setLoading(false);
         };
         fetchTodos();
     }, []);
@@ -59,6 +53,7 @@ export const App = () => {
                 todos={todos}
                 saveTodo={saveTodo}
                 handleComplete={handleComplete}
+                loadingTodos={loading}
             />
         </Container>
     );
