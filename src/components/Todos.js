@@ -6,10 +6,10 @@ import {
     Row,
     Col,
     Navbar,
-    Alert,
+    Spinner,
 } from "react-bootstrap";
 
-const Todos = ({ todos, saveTodo, handleComplete }) => {
+const Todos = ({ todos, saveTodo, handleComplete, loadingTodos }) => {
     const [todoValue, setTodoValue] = useState("");
     function submitTodo(e) {
         e.preventDefault();
@@ -17,14 +17,14 @@ const Todos = ({ todos, saveTodo, handleComplete }) => {
         setTodoValue("");
     }
     function completeTodo(id) {
-        handleComplete(id)
+        handleComplete(id);
     }
     const TodoList = () => {
-        if (Object.keys(todos).length === 0) {
+        if (loadingTodos) {
             return (
-                <Alert variant="primary">
-                    Oops! seems like you have nothing TODO!
-                </Alert>
+                <Spinner animation="border" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </Spinner>
             );
         } else {
             return (
