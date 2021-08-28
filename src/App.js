@@ -10,7 +10,7 @@ export const App = () => {
         let toComplete = todos[todo_id];
         toComplete.completed = !toComplete.completed;
         setTodos((prevState) => ({ ...prevState, [todo_id]: toComplete }));
-        const url = "http://localhost:5000/todos/" + todos[todo_id].id;
+        const url = "http://localhost:8080/todo/" + todos[todo_id].id;
         await fetch(url, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -25,7 +25,7 @@ export const App = () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(todoData),
         };
-        const url = "http://localhost:5000/todos";
+        const url = "http://localhost:8080/todo";
         fetch(url, requestOptions)
             .then((response) => response.json())
             .then((data) => {
@@ -39,7 +39,7 @@ export const App = () => {
     useEffect(() => {
         const fetchTodos = async () => {
             setLoading(true);
-            const url = "http://localhost:5000/todos";
+            const url = "http://localhost:8080/todo";
             const resp = await fetch(url);
             const fetchedTodos = await resp.json();
             setTodos(fetchedTodos);
