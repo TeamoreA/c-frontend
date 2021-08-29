@@ -3,51 +3,60 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Container } from "react-bootstrap";
 import Todos from "./components/Todos";
 
-const baseUrl = "https://c-backend-kkirjd3lsa-nw.a.run.app";
+const BASEURL = "https://c-backend-kkirjd3lsa-nw.a.run.app/todo";
+const REQUESTHRADERS = { "Content-Type": "application/json" };
+
 export const App = () => {
     const [todos, setTodos] = useState([]);
     const [loading, setLoading] = useState(false);
-    async function handleComplete(todo_id) {
+    const [completing, setCompleting] = useState(false);
+
+    const handleComplete = async (todo_id) => {
         let toComplete = todos[todo_id];
         toComplete.completed = !toComplete.completed;
         setTodos((prevState) => ({ ...prevState, [todo_id]: toComplete }));
-        const url = baseUrl + "/todo/" + todos[todo_id].id;
+        const url = BASEURL + "/" + todos[todo_id].id;
+        setCompleting(true);
+
         await fetch(url, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: REQUESTHRADERS,
         });
-    }
-    function saveTodo(todoText) {
+        setCompleting(false);
+    };
+
+    const saveTodo = (todoText) => {
         const todoData = {
             task: todoText,
         };
         const requestOptions = {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: REQUESTHRADERS,
             body: JSON.stringify(todoData),
         };
-        const url = baseUrl + "/todo";
-        fetch(url, requestOptions)
+
+        fetch(BASEURL, requestOptions)
             .then((response) => response.json())
             .then((data) => {
-                setTodos({ ...todos, data });
+                setTodos([data, ...todos]);
             })
             .catch((error) => {
                 console.error("Error:", error);
             });
-    }
+    };
+
+    const fetchTodos = async () => {
+        setLoading(true);
+        const resp = await fetch(BASEURL);
+        const fetchedTodos = await resp.json();
+        setTodos(fetchedTodos);
+        setLoading(false);
+    };
 
     useEffect(() => {
-        const fetchTodos = async () => {
-            setLoading(true);
-            const url = baseUrl + "/todo";
-            const resp = await fetch(url);
-            const fetchedTodos = await resp.json();
-            setTodos(fetchedTodos);
-            setLoading(false);
-        };
         fetchTodos();
     }, []);
+
     return (
         <Container>
             <Todos
@@ -55,6 +64,7 @@ export const App = () => {
                 saveTodo={saveTodo}
                 handleComplete={handleComplete}
                 loadingTodos={loading}
+                completingTodo={completing}
             />
         </Container>
     );
