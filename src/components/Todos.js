@@ -9,16 +9,22 @@ import {
     Spinner,
 } from "react-bootstrap";
 
-const Todos = ({ todos, saveTodo, handleComplete, loadingTodos }) => {
+const Todos = ({
+    todos,
+    saveTodo,
+    handleComplete,
+    loadingTodos,
+    completingTodo,
+}) => {
     const [todoValue, setTodoValue] = useState("");
-    function submitTodo(e) {
+    const submitTodo = (e) => {
         e.preventDefault();
         saveTodo(todoValue);
         setTodoValue("");
-    }
-    function completeTodo(id) {
+    };
+    const completeTodo = (id) => {
         handleComplete(id);
-    }
+    };
     const TodoList = () => {
         if (loadingTodos) {
             return (
@@ -39,6 +45,7 @@ const Todos = ({ todos, saveTodo, handleComplete, loadingTodos }) => {
                             }}
                             action
                             onClick={() => completeTodo(i)}
+                            disabled={completingTodo}
                         >
                             {todo.task}
                         </ListGroup.Item>
@@ -71,6 +78,7 @@ const Todos = ({ todos, saveTodo, handleComplete, loadingTodos }) => {
                                 Submit
                             </Button>
                         )}
+                        <br />
                     </Form>
                 </Col>
                 <Col md={8}>
